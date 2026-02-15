@@ -1,57 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Meu Controle de Estoque</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Controle de Estoque</title>
 
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f2f2;
-      padding: 30px;
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    h1 {
-      text-align: center;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+  padding: 15px;
+}
 
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: auto;
-    }
+h1 {
+  text-align: center;
+}
 
-    input {
-      padding: 8px;
-      width: 70%;
-    }
+.box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
-    button {
-      padding: 8px 12px;
-      margin: 5px;
-      cursor: pointer;
-    }
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    .produto {
-      background: #fafafa;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 6px;
-    }
-  </style>
+input {
+  padding: 12px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  margin-top: 5px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn-add {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-export {
+  background: #2196F3;
+  color: white;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.produto {
+  background: #fafafa;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.botoes {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.botoes button {
+  flex: 1;
+}
+
+@media (min-width: 600px) {
+  .input-group {
+    flex-direction: row;
+  }
+
+  .input-group input {
+    flex: 1;
+  }
+}
+</style>
 </head>
 <body>
 
-  <h1>📦 Meu Estoque</h1>
+<h1>📦 Meu Estoque</h1>
 
-  <div class="box">
+<div class="box">
+
+  <div class="input-group">
     <input type="text" id="nomeProduto" placeholder="Nome do produto">
-    <button onclick="adicionarProduto()">Adicionar</button>
-
-    <div id="lista"></div>
+    <button class="btn-add" onclick="adicionarProduto()">Adicionar</button>
   </div>
+
+  <div id="lista"></div>
+
+  <button class="btn-export" onclick="exportarPDF()">📄 Exportar PDF</button>
+
+</div>
 
 <script>
 
@@ -63,7 +120,6 @@ function salvar() {
 
 function adicionarProduto() {
   const nome = document.getElementById("nomeProduto").value;
-
   if (nome === "") return;
 
   produtos.push({
@@ -79,13 +135,8 @@ function adicionarProduto() {
 
 function alterarQuantidade(id, valor) {
   const produto = produtos.find(p => p.id === id);
-
   produto.quantidade += valor;
-
-  if (produto.quantidade < 0) {
-    produto.quantidade = 0;
-  }
-
+  if (produto.quantidade < 0) produto.quantidade = 0;
   salvar();
   atualizarLista();
 }
@@ -105,14 +156,38 @@ function atualizarLista() {
   produtos.forEach(produto => {
     lista.innerHTML += `
       <div class="produto">
-        <strong>${produto.nome}</strong><br>
-        Quantidade: ${produto.quantidade}<br>
-        <button onclick="alterarQuantidade(${produto.id}, 1)">+1</button>
-        <button onclick="alterarQuantidade(${produto.id}, -1)">-1</button>
-        <button onclick="deletarProduto(${produto.id})">Excluir</button>
+        <strong>${produto.nome}</strong>
+        Quantidade: ${produto.quantidade}
+        <div class="botoes">
+          <button onclick="alterarQuantidade(${produto.id}, 1)">+1</button>
+          <button onclick="alterarQuantidade(${produto.id}, -1)">-1</button>
+          <button onclick="deletarProduto(${produto.id})">Excluir</button>
+        </div>
       </div>
     `;
   });
+}
+
+function exportarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Relatório de Estoque", 20, 20);
+
+  let y = 30;
+
+  produtos.forEach(produto => {
+    doc.setFontSize(12);
+    doc.text(
+      `Produto: ${produto.nome} | Quantidade: ${produto.quantidade}`,
+      20,
+      y
+    );
+    y += 10;
+  });
+
+  doc.save("estoque.pdf");
 }
 
 atualizarLista();
