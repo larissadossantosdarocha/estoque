@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Meu Controle de Estoque</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f2f2f2;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    input {
+      padding: 8px;
+      width: 70%;
+    }
+
+    button {
+      padding: 8px 12px;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    .produto {
+      background: #fafafa;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📦 Meu Estoque</h1>
+
+  <div class="box">
+    <input type="text" id="nomeProduto" placeholder="Nome do produto">
+    <button onclick="adicionarProduto()">Adicionar</button>
+
+    <div id="lista"></div>
+  </div>
+
+<script>
+
+let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+
+function salvar() {
+  localStorage.setItem("produtos", JSON.stringify(produtos));
+}
+
+function adicionarProduto() {
+  const nome = document.getElementById("nomeProduto").value;
+
+  if (nome === "") return;
+
+  produtos.push({
+    id: Date.now(),
+    nome: nome,
+    quantidade: 0
+  });
+
+  document.getElementById("nomeProduto").value = "";
+  salvar();
+  atualizarLista();
+}
+
+function alterarQuantidade(id, valor) {
+  const produto = produtos.find(p => p.id === id);
+
+  produto.quantidade += valor;
+
+  if (produto.quantidade < 0) {
+    produto.quantidade = 0;
+  }
+
+  salvar();
+  atualizarLista();
+}
+
+function deletarProduto(id) {
+  if (confirm("Tem certeza que deseja excluir este produto?")) {
+    produtos = produtos.filter(p => p.id !== id);
+    salvar();
+    atualizarLista();
+  }
+}
+
+function atualizarLista() {
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  produtos.forEach(produto => {
+    lista.innerHTML += `
+      <div class="produto">
+        <strong>${produto.nome}</strong><br>
+        Quantidade: ${produto.quantidade}<br>
+        <button onclick="alterarQuantidade(${produto.id}, 1)">+1</button>
+        <button onclick="alterarQuantidade(${produto.id}, -1)">-1</button>
+        <button onclick="deletarProduto(${produto.id})">Excluir</button>
+      </div>
+    `;
+  });
+}
+
+atualizarLista();
+
+</script>
+
+</body>
+</html>
