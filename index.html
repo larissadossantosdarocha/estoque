@@ -23,7 +23,7 @@ h1 {
   background: white;
   padding: 20px;
   border-radius: 10px;
-  max-width: 700px;
+  max-width: 600px;
   margin: auto;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
@@ -34,7 +34,7 @@ h1 {
   gap: 10px;
 }
 
-input, select {
+input {
   padding: 12px;
   font-size: 16px;
   width: 100%;
@@ -84,11 +84,9 @@ button {
 @media (min-width: 600px) {
   .input-group {
     flex-direction: row;
-    flex-wrap: wrap;
   }
 
-  .input-group input,
-  .input-group select {
+  .input-group input {
     flex: 1;
   }
 }
@@ -101,16 +99,7 @@ button {
 <div class="box">
 
   <div class="input-group">
-    <input type="text" id="codigoProduto" placeholder="Código do produto">
     <input type="text" id="nomeProduto" placeholder="Nome do produto">
-    <select id="categoriaProduto">
-      <option value="">Categoria</option>
-      <option>Alimentos</option>
-      <option>Bebidas</option>
-      <option>Limpeza</option>
-      <option>Eletrônicos</option>
-      <option>Outros</option>
-    </select>
     <button class="btn-add" onclick="adicionarProduto()">Adicionar</button>
   </div>
 
@@ -129,24 +118,16 @@ function salvar() {
 }
 
 function adicionarProduto() {
-  const codigo = document.getElementById("codigoProduto").value;
-  const nome = document.getElementById("nomeProduto").value;
-  const categoria = document.getElementById("categoriaProduto").value;
-
+  const nome = document.getElementById("nomeProduto").value.trim();
   if (nome === "") return;
 
   produtos.push({
     id: Date.now(),
-    codigo,
-    nome,
-    categoria,
+    nome: nome,
     quantidade: 0
   });
 
-  document.getElementById("codigoProduto").value = "";
   document.getElementById("nomeProduto").value = "";
-  document.getElementById("categoriaProduto").value = "";
-
   salvar();
   atualizarLista();
 }
@@ -175,8 +156,6 @@ function atualizarLista() {
     lista.innerHTML += `
       <div class="produto">
         <strong>${produto.nome}</strong><br>
-        Código: ${produto.codigo || "-"}<br>
-        Categoria: ${produto.categoria || "-"}<br>
         Quantidade: ${produto.quantidade}
         <div class="botoes">
           <button onclick="alterarQuantidade(${produto.id}, 1)">+1</button>
@@ -200,14 +179,14 @@ function exportarPDF() {
   produtos.forEach(produto => {
     doc.setFontSize(12);
     doc.text(
-      `Código: ${produto.codigo || "-"} | ${produto.nome} | ${produto.categoria || "-"} | Qtd: ${produto.quantidade}`,
+      `${produto.nome} - Quantidade: ${produto.quantidade}`,
       20,
       y
     );
     y += 8;
   });
 
-  // 🔥 Método que funciona no iPhone
+  // 🔥 Compatível com iPhone
   const pdfData = doc.output("dataurlstring");
   window.location.href = pdfData;
 }
