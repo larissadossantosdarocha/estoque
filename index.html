@@ -171,22 +171,34 @@ function exportarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
+  let y = 20;
+  const linhaAltura = 8;
+  const alturaPagina = doc.internal.pageSize.height;
+
   doc.setFontSize(16);
-  doc.text("Relatório de Estoque", 20, 20);
+  doc.text("Relatório de Estoque", 20, y);
+  y += 15;
 
-  let y = 30;
+  doc.setFontSize(12);
 
-  produtos.forEach(produto => {
-    doc.setFontSize(12);
+  produtos.forEach((produto, index) => {
+
+    // Se chegar perto do final da página → cria nova
+    if (y + linhaAltura > alturaPagina - 10) {
+      doc.addPage();
+      y = 20;
+    }
+
     doc.text(
-      `${produto.nome} - Quantidade: ${produto.quantidade}`,
+      `${index + 1}. ${produto.nome} - Quantidade: ${produto.quantidade}`,
       20,
       y
     );
-    y += 8;
+
+    y += linhaAltura;
   });
 
-  // 🔥 Compatível com iPhone
+  // Compatível com iPhone
   const pdfData = doc.output("dataurlstring");
   window.location.href = pdfData;
 }
@@ -197,3 +209,4 @@ atualizarLista();
 
 </body>
 </html>
+
