@@ -140,6 +140,18 @@ function alterarQuantidade(id, valor) {
   atualizarLista();
 }
 
+function editarProduto(id) {
+  const produto = produtos.find(p => p.id === id);
+
+  const novoNome = prompt("Editar nome do produto:", produto.nome);
+
+  if (novoNome && novoNome.trim() !== "") {
+    produto.nome = novoNome.trim();
+    salvar();
+    atualizarLista();
+  }
+}
+
 function deletarProduto(id) {
   if (confirm("Excluir produto?")) {
     produtos = produtos.filter(p => p.id !== id);
@@ -160,6 +172,7 @@ function atualizarLista() {
         <div class="botoes">
           <button onclick="alterarQuantidade(${produto.id}, 1)">+1</button>
           <button onclick="alterarQuantidade(${produto.id}, -1)">-1</button>
+          <button onclick="editarProduto(${produto.id})">✏ Editar</button>
           <button onclick="deletarProduto(${produto.id})">Excluir</button>
         </div>
       </div>
@@ -183,7 +196,6 @@ function exportarPDF() {
 
   produtos.forEach((produto, index) => {
 
-    // Se chegar perto do final da página → cria nova
     if (y + linhaAltura > alturaPagina - 10) {
       doc.addPage();
       y = 20;
@@ -198,7 +210,6 @@ function exportarPDF() {
     y += linhaAltura;
   });
 
-  // Compatível com iPhone
   const pdfData = doc.output("dataurlstring");
   window.location.href = pdfData;
 }
@@ -209,4 +220,3 @@ atualizarLista();
 
 </body>
 </html>
-
