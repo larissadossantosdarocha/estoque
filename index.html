@@ -119,6 +119,13 @@ button {
 
 let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
 
+// 🔥 Corrige automaticamente produtos antigos
+produtos.forEach(produto => {
+  if (!produto.tipoControle) {
+    produto.tipoControle = "Quantidade";
+  }
+});
+
 function salvar() {
   localStorage.setItem("produtos", JSON.stringify(produtos));
 }
@@ -223,6 +230,7 @@ function exportarPDF() {
 }
 
 atualizarLista();
+salvar();
 
 </script>
 
