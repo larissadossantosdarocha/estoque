@@ -119,7 +119,7 @@ button {
 
 let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
 
-// 🔥 Corrige automaticamente produtos antigos
+// Corrige produtos antigos
 produtos.forEach(produto => {
   if (!produto.tipoControle) {
     produto.tipoControle = "Quantidade";
@@ -156,27 +156,29 @@ function alterarQuantidade(id, valor) {
   atualizarLista();
 }
 
-function editarProduto(id) {
+// 🔄 Trocar Quantidade ↔ Engradados
+function trocarTipo(id) {
   const produto = produtos.find(p => p.id === id);
 
-  const novoNome = prompt("Editar nome do produto:", produto.nome);
-  if (!novoNome || novoNome.trim() === "") return;
-
-  const novoTipo = prompt(
-    "Digite o tipo:\n1 - Quantidade\n2 - Engradados",
-    produto.tipoControle === "Engradados" ? "2" : "1"
-  );
-
-  if (novoTipo === "1") {
-    produto.tipoControle = "Quantidade";
-  } else if (novoTipo === "2") {
+  if (produto.tipoControle === "Quantidade") {
     produto.tipoControle = "Engradados";
+  } else {
+    produto.tipoControle = "Quantidade";
   }
-
-  produto.nome = novoNome.trim();
 
   salvar();
   atualizarLista();
+}
+
+function editarProduto(id) {
+  const produto = produtos.find(p => p.id === id);
+  const novoNome = prompt("Editar nome:", produto.nome);
+
+  if (novoNome && novoNome.trim() !== "") {
+    produto.nome = novoNome.trim();
+    salvar();
+    atualizarLista();
+  }
 }
 
 function deletarProduto(id) {
@@ -199,6 +201,7 @@ function atualizarLista() {
         <div class="botoes">
           <button onclick="alterarQuantidade(${produto.id}, 1)">+1</button>
           <button onclick="alterarQuantidade(${produto.id}, -1)">-1</button>
+          <button onclick="trocarTipo(${produto.id})">🔄 Trocar Tipo</button>
           <button onclick="editarProduto(${produto.id})">✏ Editar</button>
           <button onclick="deletarProduto(${produto.id})">Excluir</button>
         </div>
