@@ -150,13 +150,27 @@ function adicionarProduto() {
 
 function alterarQuantidade(id, valor) {
   const produto = produtos.find(p => p.id === id);
+
+  let mensagem = "";
+
+  if (valor > 0) {
+    mensagem = `Adicionar 1 ${produto.tipoControle} em ${produto.nome}?`;
+  } else {
+    mensagem = `Remover 1 ${produto.tipoControle} de ${produto.nome}?`;
+  }
+
+  if (!confirm(mensagem)) return;
+
   produto.quantidade += valor;
-  if (produto.quantidade < 0) produto.quantidade = 0;
+
+  if (produto.quantidade < 0) {
+    produto.quantidade = 0;
+  }
+
   salvar();
   atualizarLista();
 }
 
-// 🔄 Trocar Quantidade ↔ Engradados
 function trocarTipo(id) {
   const produto = produtos.find(p => p.id === id);
 
