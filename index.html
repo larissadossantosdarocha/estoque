@@ -158,13 +158,25 @@ function alterarQuantidade(id, valor) {
 
 function editarProduto(id) {
   const produto = produtos.find(p => p.id === id);
-  const novoNome = prompt("Editar nome:", produto.nome);
 
-  if (novoNome && novoNome.trim() !== "") {
-    produto.nome = novoNome.trim();
-    salvar();
-    atualizarLista();
+  const novoNome = prompt("Editar nome do produto:", produto.nome);
+  if (!novoNome || novoNome.trim() === "") return;
+
+  const novoTipo = prompt(
+    "Digite o tipo:\n1 - Quantidade\n2 - Engradados",
+    produto.tipoControle === "Engradados" ? "2" : "1"
+  );
+
+  if (novoTipo === "1") {
+    produto.tipoControle = "Quantidade";
+  } else if (novoTipo === "2") {
+    produto.tipoControle = "Engradados";
   }
+
+  produto.nome = novoNome.trim();
+
+  salvar();
+  atualizarLista();
 }
 
 function deletarProduto(id) {
