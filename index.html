@@ -34,7 +34,7 @@ h1 {
   gap: 10px;
 }
 
-input {
+select, input {
   padding: 12px;
   font-size: 16px;
   width: 100%;
@@ -86,7 +86,7 @@ button {
     flex-direction: row;
   }
 
-  .input-group input {
+  .input-group input, .input-group select {
     flex: 1;
   }
 }
@@ -100,6 +100,12 @@ button {
 
   <div class="input-group">
     <input type="text" id="nomeProduto" placeholder="Nome do produto">
+
+    <select id="tipoControle">
+      <option value="Quantidade">Quantidade</option>
+      <option value="Engradados">Engradados</option>
+    </select>
+
     <button class="btn-add" onclick="adicionarProduto()">Adicionar</button>
   </div>
 
@@ -119,12 +125,15 @@ function salvar() {
 
 function adicionarProduto() {
   const nome = document.getElementById("nomeProduto").value.trim();
+  const tipo = document.getElementById("tipoControle").value;
+
   if (nome === "") return;
 
   produtos.push({
     id: Date.now(),
     nome: nome,
-    quantidade: 0
+    quantidade: 0,
+    tipoControle: tipo
   });
 
   document.getElementById("nomeProduto").value = "";
@@ -142,8 +151,7 @@ function alterarQuantidade(id, valor) {
 
 function editarProduto(id) {
   const produto = produtos.find(p => p.id === id);
-
-  const novoNome = prompt("Editar nome do produto:", produto.nome);
+  const novoNome = prompt("Editar nome:", produto.nome);
 
   if (novoNome && novoNome.trim() !== "") {
     produto.nome = novoNome.trim();
@@ -168,7 +176,7 @@ function atualizarLista() {
     lista.innerHTML += `
       <div class="produto">
         <strong>${produto.nome}</strong><br>
-        Quantidade: ${produto.quantidade}
+        ${produto.tipoControle}: ${produto.quantidade}
         <div class="botoes">
           <button onclick="alterarQuantidade(${produto.id}, 1)">+1</button>
           <button onclick="alterarQuantidade(${produto.id}, -1)">-1</button>
@@ -202,7 +210,7 @@ function exportarPDF() {
     }
 
     doc.text(
-      `${index + 1}. ${produto.nome} - Quantidade: ${produto.quantidade}`,
+      `${index + 1}. ${produto.nome} - ${produto.tipoControle}: ${produto.quantidade}`,
       20,
       y
     );
@@ -220,4 +228,3 @@ atualizarLista();
 
 </body>
 </html>
-
